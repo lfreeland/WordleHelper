@@ -1,5 +1,4 @@
 import { LightningElement, track } from 'lwc';
-//import filter5LetterWordleWords from '@salesforce/apex/WordleHelperController.filter5LetterWordleWords';
 import getAll5LetterWords from '@salesforce/apex/WordleHelperController.getAll5LetterWords';
 
 export default class WordleHelper extends LightningElement {
@@ -269,7 +268,6 @@ export default class WordleHelper extends LightningElement {
         const wordCountByletterMap = this.buildWordCountByLetterMap(candidateWords);
         const top5LettersWithWordCountMap = this.getTop5MosedUsedLetters(wordCountByletterMap);
 
-        let nextSuggestedWord = '';
         let suggestedWords = [];
 
         for (let currentTopLetters = 5; currentTopLetters >= 3; currentTopLetters--) {
