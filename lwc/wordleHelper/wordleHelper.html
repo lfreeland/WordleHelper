@@ -1,0 +1,90 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <div class="slds-box slds-theme_default">
+        <h1 class="slds-text-heading_medium">5 Letter Wordle Helper</h1>
+
+        <lightning-input type="text"
+                         label="Excluded Characters"
+                         onchange={onExcludedCharactersChange}
+                         class="slds-m-top_small excludedCharactersInput"
+                         value={excludedCharacters}></lightning-input>
+
+        <h2 class="slds-m-top_small">Included Character Rules</h2>
+
+        <template for:each={includedCharacters} for:item="includedCharacter">
+            <div key={includedCharacter.index} class="slds-m-horizontal_small slds-m-bottom_medium">
+            The letter 
+            <lightning-combobox
+                    value={includedCharacter.character}
+                    placeholder="Select Character"
+                    options={englishCharacterOptions}
+                    onchange={onIncludedCharacterChange}
+                    key={includedCharacter.index}
+                    variant="label-hidden"
+                    class="includedCharacterDropdown"
+                    data-index={includedCharacter.index}></lightning-combobox>
+                
+            <lightning-combobox
+                    value={includedCharacter.isOrIsNot}
+                    options={letterInOrNotInOptions}
+                    onchange={onLetterInOrNotInChange}
+                    key={includedCharacter.index}
+                    variant="label-hidden"
+                    class="includedCharacterDropdown"
+                    data-index={includedCharacter.index}></lightning-combobox>
+
+            the
+
+            <lightning-combobox
+                    value={includedCharacter.letterPosition}
+                    placeholder="Select a letter location"
+                    options={letterPositionOptions}
+                    onchange={onLetterPositionChange}
+                    key={includedCharacter.index}
+                    variant="label-hidden"
+                    class="includedCharacterDropdown slds-m-right_small"
+                    data-index={includedCharacter.index}></lightning-combobox>
+
+            <lightning-button-icon icon-name="utility:delete"
+                                   title="Delete Included Character Criteria"
+                                   value={includedCharacter.index}
+                                   onclick={onDeleteIncludedCharacterRow}></lightning-button-icon>
+            </div>
+        </template>
+
+        <lightning-button label="Get Eligible Words"
+                          onclick={onGetEligibleWordsClick}
+                          variant="brand"></lightning-button>
+
+        <lightning-button label="Add Included Character Rule"
+                          onclick={onAddIncludedCharacterRowClick}
+                          class="slds-m-left_x-small"></lightning-button>
+
+        <lightning-button label="Reset"
+                          onclick={onResetClick}
+                          class="slds-m-left_x-small"></lightning-button>
+
+        <div if:true={showCandidateWords}>
+            <h2 class="slds-text-heading_medium slds-m-top_medium">Candidate Words</h2>
+            <div class="slds-m-vertical_small">
+                <a href="https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt" target="_blank">Source Dictionary</a>
+                &nbsp; at this <a href="https://github.com/dwyl/english-words" target="blank">Github Repo</a>
+            </div>
+
+
+            <div if:true={hasSuggestedWords}>Next Suggested Words: {suggestedNextWord}</div>
+                
+            <template if:true={hasCandidateWords} for:each={suggestedNextWords} for:item="suggestedNextWord">
+                <p key={suggestedNextWord}>{suggestedNextWord}</p>
+            </template>
+
+            <p if:true={hasCandidateWords} class="slds-m-vertical_small">{candidateWords.length} Word(s) Found.</p>
+
+            <template if:true={hasCandidateWords} for:each={candidateWords} for:item="candidateWord">
+                <p key={candidateWord}>{candidateWord}</p>
+            </template>
+
+            <p if:false={hasCandidateWords}>No Candidate Words Found.</p>
+        </div>
+    </div>
+</template>
