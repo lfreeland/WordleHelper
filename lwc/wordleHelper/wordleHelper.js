@@ -1,4 +1,5 @@
 import { LightningElement, track } from 'lwc';
+import getWordleContext from '@salesforce/apex/WordleHelperController.getWordleContext';
 import getAll5LetterWords from '@salesforce/apex/WordleHelperController.getAll5LetterWords';
 
 export default class WordleHelper extends LightningElement {
@@ -7,6 +8,7 @@ export default class WordleHelper extends LightningElement {
     @track candidateWords = [];
     showCandidateWords = false;
     all5LetterWords = [];
+    fiveLetterFrequencies;
 
     get englishCharacterOptions() {
         const aToZChars = [];
@@ -48,7 +50,7 @@ export default class WordleHelper extends LightningElement {
 
     connectedCallback() {
         this.addIncludedCharacterRow();
-        this.loadAll5LetterWords();
+        this.loadWordleContext();
     }
 
     onExcludedCharactersChange(event) {
@@ -123,7 +125,7 @@ export default class WordleHelper extends LightningElement {
         let filtered5LetterWords = this.filterWordsByExclusionLetters(this.all5LetterWords, lowerCaseExcludedCharacters);
         filtered5LetterWords = this.filterWordsByInclusionLetterRules(filtered5LetterWords, this.getIncludedCharacterRules());
 
-        return filtered5LetterWords;
+        return this.sortWordsByMostUsedToLeastUsed(filtered5LetterWords);
     }
 
     filterWordsByExclusionLetters(wordsToFilter, exclusionLetters) {
@@ -241,10 +243,11 @@ export default class WordleHelper extends LightningElement {
         return includedCharacterRows;
     }
 
-    loadAll5LetterWords() {
-        getAll5LetterWords()
+    loadWordleContext() {
+        getWordleContext()
         .then(result => {
-            this.all5LetterWords = result;
+            this.all5LetterWords = result.fiveLetterWords;
+            this.fiveLetterFrequencies = result.fiveLetterWordFrequencies;
         });
     }
 
@@ -268,6 +271,7 @@ export default class WordleHelper extends LightningElement {
         const wordCountByletterMap = this.buildWordCountByLetterMap(candidateWords);
         const top5LettersWithWordCountMap = this.getTop5MosedUsedLetters(wordCountByletterMap);
 
+        let nextSuggestedWord = '';
         let suggestedWords = [];
 
         for (let currentTopLetters = 5; currentTopLetters >= 3; currentTopLetters--) {
@@ -280,7 +284,7 @@ export default class WordleHelper extends LightningElement {
             }
         }
 
-        return suggestedWords;
+        return this.sortWordsByMostUsedToLeastUsed(suggestedWords);
     }
 
     buildWordCountByLetterMap(words) {
@@ -343,5 +347,30 @@ export default class WordleHelper extends LightningElement {
         }
 
         return topNCharacters;
+    }
+
+    sortWordsByMostUsedToLeastUsed(wordsToSort) {
+        var fiveLetterFreqs = this.fiveLetterFrequencies;
+
+        return wordsToSort.sort(function compareFn(wordA, wordB) {
+            const wordAFrequency = fiveLetterFreqs[wordA];
+            const wordBFrequency = fiveLetterFreqs[wordB];
+
+            if (wordAFrequency && wordBFrequency) {
+                return wordBFrequency - wordAFrequency;
+            }
+
+            // word B not found but word A found so word A comes first
+            if (wordAFrequency && !wordBFrequency) {
+                return -1;
+            }
+
+            // word A not found but word B found so word B comes first
+            if (wordBFrequency && !wordAFrequency) {
+                return 1;
+            }
+
+            return 0;
+        });
     }
 }

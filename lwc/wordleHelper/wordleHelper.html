@@ -72,13 +72,13 @@
             </div>
 
 
-            <div if:true={hasSuggestedWords}>Next Suggested Words: {suggestedNextWord}</div>
+            <div if:true={hasSuggestedWords}>Next Suggested Words Ordered From Most-to-Least Common</div>
                 
             <template if:true={hasCandidateWords} for:each={suggestedNextWords} for:item="suggestedNextWord">
                 <p key={suggestedNextWord}>{suggestedNextWord}</p>
             </template>
 
-            <p if:true={hasCandidateWords} class="slds-m-vertical_small">{candidateWords.length} Word(s) Found.</p>
+            <p if:true={hasCandidateWords} class="slds-m-vertical_small">{candidateWords.length} Word(s) Found. Ordered From Most-to-Least Common.</p>
 
             <template if:true={hasCandidateWords} for:each={candidateWords} for:item="candidateWord">
                 <p key={candidateWord}>{candidateWord}</p>
