@@ -1,0 +1,67 @@
+<template>
+    <h1 class="slds-text-heading_medium">"Generic" Wordle Helper</h1>
+
+    <lightning-combobox
+                value={selectedWordLength}
+                label="Select Word Length"
+                options={availableWordLengthsOptions}
+                onchange={onSelectedWordLengthChange}></lightning-combobox>
+
+    <lightning-input type="text"
+                     label="Excluded Characters"
+                     onchange={onExcludedCharactersChange}
+                     class="slds-m-top_small excludedCharactersInput"
+                     value={excludedCharacters}></lightning-input>
+
+    <h2 class="slds-m-top_small">Included Character Rules</h2>
+
+    <template for:each={includedCharacters} for:item="includedCharacter">
+        <div key={includedCharacter.index} class="slds-m-horizontal_small slds-m-bottom_medium">
+        <lightning-combobox
+                value={includedCharacter.character}
+                placeholder="Select letter"
+                options={englishCharacterOptions}
+                onchange={onIncludedCharacterChange}
+                key={includedCharacter.index}
+                variant="label-hidden"
+                class="includedCharacterDropdown"
+                data-index={includedCharacter.index}></lightning-combobox>
+            
+        <lightning-combobox
+                value={includedCharacter.isOrIsNot}
+                options={letterInOrNotInOptions}
+                onchange={onLetterInOrNotInChange}
+                key={includedCharacter.index}
+                variant="label-hidden"
+                class="includedCharacterDropdown"
+                data-index={includedCharacter.index}></lightning-combobox>
+
+        <lightning-combobox
+                value={includedCharacter.letterPosition}
+                placeholder="Select a letter location"
+                options={letterPositionOptions}
+                onchange={onLetterPositionChange}
+                key={includedCharacter.index}
+                variant="label-hidden"
+                class="includedCharacterDropdown slds-m-right_small"
+                data-index={includedCharacter.index}></lightning-combobox>
+
+        <lightning-button-icon icon-name="utility:delete"
+                               title="Delete Included Character Criteria"
+                               value={includedCharacter.index}
+                               onclick={onDeleteIncludedCharacterRow}></lightning-button-icon>
+        </div>
+    </template>
+
+    <lightning-button label="Get Eligible Words"
+                      onclick={fireGetEligibleWordsEvent}
+                      variant="brand"></lightning-button>
+
+    <lightning-button label="Add Included Character Rule"
+                      onclick={onAddIncludedCharacterRowClick}
+                      class="slds-m-left_x-small"></lightning-button>
+
+    <lightning-button label="Reset"
+                      onclick={onResetClick}
+                      class="slds-m-left_x-small"></lightning-button>
+</template>

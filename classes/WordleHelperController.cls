@@ -1,4 +1,20 @@
-public with sharing class WordleHelperController {
+public without sharing class WordleHelperController {
+
+    @AuraEnabled
+    public static String getAllWordsWithFrequenciesFileContents() {
+        // The Kabble Source Dicitionary is stored in the ContentDocument file.
+        // Update the Id with your content document id.
+        ContentDocument wordFrequencyFile = [
+            SELECT Id,
+                   Title,
+                   LatestPublishedVersionId,
+                   LatestPublishedVersion.VersionData
+              FROM ContentDocument
+             WHERE Id = :'0694W00000M0vCaQAJ'
+        ];
+
+        return wordFrequencyFile.LatestPublishedVersion.VersionData.tostring();
+    }
 
     @AuraEnabled
     public static WordleContext getWordleContext(){
@@ -29,5 +45,13 @@ public with sharing class WordleHelperController {
 
         @AuraEnabled
         public Map<String, Long> fiveLetterWordFrequencies { get; set; }
+    }
+
+    public class WordleMetadata {
+        @AuraEnabled
+        public String AllWordsString { get; set; }
+
+        @AuraEnabled
+        public String allWordsWithFrequencies { get; set; }
     }
 }

@@ -176,5 +176,43 @@ public with sharing class WordleUtil {
         return lengthWords;
     }
 
+    public static Map<String, Integer> buildLetterCountMap(List<String> words) {
+        Map<String, Integer> letterCounts = new Map<String, Integer>();
 
+        for (String lowerCaseLetter : getEnglishLowerCaseLetters()) {
+            system.debug('  lowerCaseLetter: ' + lowerCaseLetter);
+
+            letterCounts.put(lowerCaseLetter, 0);
+        }
+
+        for (String word : words) {
+            Integer wordLength = word.length();
+
+            for (Integer letterIndex = 0; letterIndex < wordLength; ++letterIndex) {
+                Integer characterCode = word.charAt(letterIndex);
+                String letter = String.fromCharArray(new Integer[]{ characterCode });
+                String lowerCaseLetter = letter.toLowerCase();
+
+                Integer letterCount = letterCounts.get(lowerCaseLetter);
+                ++letterCount;
+
+                letterCounts.put(lowerCaseLetter, letterCount);
+            }
+        }
+
+
+        return letterCounts;
+    }
+
+    public static List<String> getEnglishLowerCaseLetters() {
+        Integer lowerCaseACharCode = 97;
+        Integer lowerCaseZCharCode = 122;
+        List<String> lowerCaseEnglishLetters = new List<String>();
+
+        for (Integer characterCode = lowerCaseACharCode; characterCode <= lowerCaseZCharCode; ++characterCode) {
+            lowerCaseEnglishLetters.add( String.fromCharArray(new Integer[]{ characterCode }) );
+        }
+
+        return lowerCaseEnglishLetters;
+    }
 }
