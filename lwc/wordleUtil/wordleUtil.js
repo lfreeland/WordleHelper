@@ -50,18 +50,21 @@ function filterWordsByInclusionLetterRules(wordsToFilter, inclusionLetterRules) 
 }
 
 function calculateNextSuggestedWords(candidateWords) {
-    if (candidateWords.length == 1) {
+    if (candidateWords.length == 1 ||
+        candidateWords.length == 0) {
         return candidateWords;
     }
 
+    const wordLength = candidateWords[0].length;
+
     const wordCountByletterMap = buildWordCountByLetterMap(candidateWords);
-    const top5LettersWithWordCountMap = getTop5MosedUsedLetters(wordCountByletterMap);
+    const topLettersWithWordCountMap = getTopMostUsedLetters(wordCountByletterMap);
 
     let nextSuggestedWord = '';
     let suggestedWords = [];
 
-    for (let currentTopLetters = 5; currentTopLetters >= 3; currentTopLetters--) {
-        let topMostCharacters = getTopNCharacters(top5LettersWithWordCountMap, currentTopLetters);
+    for (let currentTopLetters = wordLength; currentTopLetters >= 3; currentTopLetters--) {
+        let topMostCharacters = getTopNCharacters(topLettersWithWordCountMap, currentTopLetters);
 
         suggestedWords = filterWordsByContainingAllInclusionLetters(candidateWords, topMostCharacters);
 
@@ -73,7 +76,7 @@ function calculateNextSuggestedWords(candidateWords) {
     return suggestedWords;
 }
 
-function getTop5MosedUsedLetters(wordCountByletterMap) {
+function getTopMostUsedLetters(wordCountByletterMap) {
     let lettersByWordCountMap = new Map();
 
     for (const letter of wordCountByletterMap.keys()) {
@@ -90,16 +93,15 @@ function getTop5MosedUsedLetters(wordCountByletterMap) {
     wordCountsArray = wordCountsArray.sort(function(a, b){return a-b});
     wordCountsArray = wordCountsArray.reverse();
 
-    const top5LettersWithWordCountMap = new Map();
+    const topLettersWithWordCountMap = new Map();
 
-    for (let i = 0; i < 5; ++i) {
-        let wordCount = wordCountsArray[i];
-        let letter = lettersByWordCountMap.get(wordCount);
+    for (const wordCount of wordCountsArray) {
+        const letter = lettersByWordCountMap.get(wordCount);
 
-        top5LettersWithWordCountMap.set(letter, wordCount);
+        topLettersWithWordCountMap.set(letter, wordCount);
     }
 
-    return top5LettersWithWordCountMap;
+    return topLettersWithWordCountMap;
 }
 
 function getTopNCharacters(wordCountByletterMap, topNWords) {
@@ -107,7 +109,7 @@ function getTopNCharacters(wordCountByletterMap, topNWords) {
     let counter = 0;
     let characters = [...wordCountByletterMap.keys()];
 
-    for (let index = 0; index < topNWords; ++index) {
+    for (let index = 0; index < topNWords && index < characters.length; ++index) {
         topNCharacters.push(characters[index]);
     }
 
